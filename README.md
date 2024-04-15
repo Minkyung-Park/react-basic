@@ -147,7 +147,7 @@ Which package manager do you want to use? yarn 선택
 
 - 바벨에 의한 경고창 뜨는거 방지용(경고 해결은 아님)
 
-- `npm install @babel/plugin-proposal-private-property-in-object --dev(구글링해라)
+- `npm install @babel/plugin-proposal-private-property-in-object --dev`
 - `yarn add @babel/plugin-proposal-private-property-in-object --dev`
 
 App.js에서 다 지우고 이거 복붙
