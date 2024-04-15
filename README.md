@@ -101,17 +101,45 @@ const Main = () => {
 export default Main;
 ```
 
-## 1.6 인라인스타일링
+## 1.6 인라인 스타일링
 
 - DOM 요소에 스타일을 적용할 때는 문자열이 아닌 객체 형태로
-- 카멜 케이스
+- 카멜케이스
 
 ```js
+import React from "react";
 
+const Main = () => {
+  const title = "리액트";
+
+  return (
+    <div
+      style={{ backgroundColor: "pink", fontSize: "48px", fontWeight: "bold" }}
+    >
+      {title}
+    </div>
+  );
+};
+
+export default Main;
 ```
 
 ```js
+import React from "react";
 
+const Main = () => {
+  const title = "리액트";
+
+  const style = {
+    backgroundColor: "pink",
+    fontSize: "48px",
+    fontWeight: "bold",
+  };
+
+  return <div style={style}>{title}</div>;
+};
+
+export default Main;
 ```
 
 ## 1.7 class 대신 className
@@ -129,9 +157,9 @@ const Main = () => {
 export default Main;
 ```
 
-## 1.8 styled-component (Emotion)
+## 1.8 styled-component(Emotion)
 
-- CSS-in-JS
+- CSS in JS
 
 ```js
 import React from "react";
