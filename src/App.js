@@ -1,11 +1,7 @@
-import Main from "./main";
+import Main from "./Main";
 
 function App() {
-  return (
-    <div>
-      <h1>리액트 베이직</h1>
-    </div>
-  );
+  return <Main title="리액트" />;
 }
 
 export default App;
