@@ -1,155 +1,42 @@
-# 2. 컴포넌트
+# 3. useState()
 
-## 2.1 클래스형 컴포넌트
+## 3.1 state
 
-- 생긴 모양만 일단 알아두자
-- 함수형과 기능에서 큰 차이 없음
-- **현재 트랜드는 함수형 컴포넌트와 Hooks를 사용하는 것**
+- 리액트에서 state는 컴포넌트 내부에서 바뀔 수 있는 값을 의미
+- props는 상위 컴포넌트가 설정하는 값
+- 컴포넌트 자신은 해당 props를 읽기 전용으로만 사용할 수 있음
+- props를 바꿀려면 부모 컴포넌트에서 바꿔 줘야함
+- 하위 컴포넌트에서 전달 받은 props 값을 직접 바꿀 수 없는데 state는 컴포넌트 자체적으로 지닌 값으로 컴포넌트 내부에서 값을 업데이트 할 수 있음
 
-```js
-import React, { Component } from "react";
-import "./react.css";
+### 3.1.1 useState()
 
-// const Main = () => {
-//   const title = "리액트";
+- 리액트 16.8 이후 버전에서 사용 가능
+- 이전 버전에서는 Class state 사용
 
-//   return (
-//     <div>
-//       <h1>{title}</h1>
-//     </div>
-//   );
-// };
+### 3.1.1.1 배열 구조 분해 할당
 
-class Main extends Component {
-  render() {
-    const title = "리액트";
-    return (
-      <div>
-        <h1>{title}</h1>
-      </div>
-    );
-  }
-}
-
-export default Main;
-```
-
-## 2.2 컴포넌트 생성
-
-- 파일 및 컴포넌트 명은 파스칼 케이스로 함
-- 리액트에서는 화살표 함수를 많이 씀
-
-## 2.3 Props(properties)
-
-- 컴포넌트 속성을 설정할 때 사용하는 요소
-- **props 값은 해당 컴포넌트를 불러와 사용하는 부모 컴포넌트에서 설정**
-
-### 2.3.1 JSX 내부에서 props 랜더링
-
-- props 값은 컴포넌트 함수의 파라미터로 받아와서 사용할 수 있음
-- props를 렌더링 할 때는 JSX 내부에서 {}로 감쌈
-
-- Main.js
-
-```js
-import React from "react";
-import "./react.css";
-
-const Main = props => {
-  return (
-    <div>
-      <h1>안녕하세요, 나는{props.title}입니다.</h1>
-    </div>
-  );
-};
-
-export default Main;
-```
-
-### 2.3.2 컴포넌트를 사용할 때 props 값 지정하기
-
-- App.js
-
-```js
-import Main from "./Main";
-
-function App() {
-  return <Main title="리액트" />;
-}
-
-export default App;
-```
-
-### 2.3.3 props 기본값 설정 : defaultProps
-
-```js
-import React, { Component } from "react";
-import "./react.css";
-
-const Main = props => {
-  return (
-    <div>
-      <h1>안녕하세요, 나는 {props.title}입니다</h1>
-    </div>
-  );
-};
-
-Main.defaultProps = {
-  title: "기본 이름",
-};
-
-export default Main;
-```
-
-### 2.3.4 태그 사이의 내용을 보여주는 children
-
-- src/App.js
-
-```js
-import Main from "./Main";
-
-function App() {
-  return <Main>리액트</Main>;
-}
-
-export default App;
-```
-
-- src/Main.js
-
-```js
-import React, { Component } from "react";
-import "./react.css";
-
-const Main = props => {
-  return (
-    <div>
-      <h1>안녕하세요, 나는 {props.title}입니다</h1>
-      <h2>children 값은 {props.children}입니다</h2>
-    </div>
-  );
-};
-
-Main.defaultProps = {
-  title: "기본 이름",
-};
-
-export default Main;
-```
-
-### 2.3.5 구조분해할당(비구조화 할당 문법)을 통해 props 내부 값 추출
-
-- https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
-- src/Main.js
+- 배열 구조 분해 할당
 
 ```js
 import React, { Component } from "react";
 
 const Main = ({ title, children }) => {
+  const array = [10, 20];
+  // const one = array[0];
+  // const two = array[1];
+
+  // console.log(one);
+  // console.log(two);
+
+  // 배열 구조 분해 할당
+  const [one, two] = array;
+  console.log(one);
+  console.log(two);
+
   return (
     <div>
-      <h1>안녕하세요, 나는 {props.title}입니다</h1>
-      <h2>children 값은 {props.children}입니다</h2>
+      <h1>안녕하세요, 나는 {title}입니다</h1>
+      <h2>children 값은 {children}입니다</h2>
     </div>
   );
 };
@@ -161,6 +48,116 @@ Main.defaultProps = {
 export default Main;
 ```
 
-### 2.3.6 prop Types을 통한 props
+#### 3.1.1.2 useState 사용
 
-- (교재 참고)
+```js
+import React, { Component, useState } from "react";
+
+const Main = () => {
+  // useState 함수의 인자(인수, argument)에 초기값 useState(초기값)
+  // useState 함수를 호출하면 배열이 반환
+  // 배열의 첫 번째 요소는 현재 상태 message
+  // 두번째 요소는 상태를 바꿔주는 setter 함수 setMessage
+
+  // message는 초기값, setMessage는 함수
+  const [message, setMessage] = useState("");
+
+  const onClickEnter = () => {
+    setMessage("안녕하세요");
+  };
+  const onClickLeave = () => {
+    setMessage("안녕히 가세요");
+  };
+
+  return (
+    <div>
+      <button onClick={onClickEnter}>입장</button>
+      <button onClick={onClickLeave}>퇴장</button>
+      <h1>{message}</h1>
+    </div>
+  );
+};
+
+export default Main;
+```
+
+#### 3.1.1.3 한 컴포넌트에서 useState 여러번 사용하기
+
+```js
+import React, { Component, useState } from "react";
+
+const Main = () => {
+  // 메세지 상태 변경
+  const [message, setMessage] = useState("");
+  // 메세지 컬러 상태
+  const [color, setColor] = useState("black");
+
+  const onClickEnter = () => {
+    setMessage("안녕하세요");
+    setColor("red");
+  };
+  const onClickLeave = () => {
+    setMessage("안녕히 가세요");
+    setColor("blue");
+  };
+
+  return (
+    <div>
+      <button onClick={onClickEnter}>입장</button>
+      <button onClick={onClickLeave}>퇴장</button>
+      <h1 style={{ color }}>{message}</h1>
+    </div>
+  );
+};
+
+export default Main;
+```
+
+## 3.2 state를 사용할 때 주의사항
+
+- state 값을 바꿔야할 때는 setState 혹은 useState를 통해 전달 받은 setter 함수(setMessage, setColor 같은 것들임)를 사용해야함
+- 배열이나 객체를 update해야할 때
+
+```js
+import React, { Component, useState } from "react";
+
+const Main = () => {
+  const object = { a: 1, b: 2, c: 3 };
+  const nextObject = { ...object, b: 5 }; // object 사본을 만들어서 b 값만 덮어씀
+  console.log(nextObject, object);
+
+  // 객체를 들고 있는 배열
+  const array = [
+    { id: 1, value: true },
+    { id: 2, value: true },
+    { id: 3, value: false },
+    { id: 4, value: true },
+    { id: 5, value: false },
+    { id: 6, value: true },
+  ];
+
+  let nextArray = array.concat({ id: 7 }); // 새 항목 추가
+  nextArray = nextArray.filter(item => item.id !== 2); // id가 2인 항목 제거
+  nextArray = nextArray.map(item =>
+    item.id === 1 ? { ...item, value: false } : item,
+  ); // id가 1인 항목의 value를 false로 설정
+
+  console.log(array);
+  console.log(nextArray);
+
+  return (
+    <div>
+      {/* <button onClick={onClickEnter}>입장</button>
+      <button onClick={onClickLeave}>퇴장</button>
+      <h1 style={{ color }}>{message}</h1> */}
+    </div>
+  );
+};
+
+export default Main;
+```
+
+## 3.3 정리
+
+- props는 상위 컴포넌트가 설정
+- state는 컴포넌트 자체적으로 지닌 값으로 컴포넌트 내부에서 값을 update
