@@ -101,6 +101,279 @@ export default App;
   - Unmount : 컴포넌트를 DOM에서 제거하는 것
   - useEffect는 기본적으로 렌더링되고 난 직후마다 실행됨
   - 두 번째 파라미터 배열에 무엇을 넣는지에 따라 실행되는 조건이 달라짐
-  - 컴포넌트가 언마운트 되기 전이나 업데이트 되기 직전에 어떠한 작업을 수행하고 싶다면 cleanUp 함수를 반환해주어야 함
-  - 렌더링될 때마다 뒷정리 함수가 계속 나타나는 것을 확인 할 수 있음
-  - 뒷정리 함수가 호출될 때는 업데이트 직전의 값을 보여줌
+
+```js
+import React, { useEffect, useState } from "react";
+
+const Counter = () => {
+  console.log("카운터 컴포넌트 렌더링");
+
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    console.log("effect");
+    console.log(value);
+  }, [value]);
+
+  return (
+    <div>
+      <p>
+        현재 카운터 값은 <b>{value} 입니다</b>
+      </p>
+      <button onClick={() => setValue(value + 1)}>1 증가</button>
+      <button onClick={() => setValue(value - 1)}>1 감소</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+- 컴포넌트가 언마운트 되기 전이나 업데이트 되기 직전에 어떠한 작업을 수행하고 싶다면 cleanUp 함수를 반환해주어야 함
+- 렌더링될 때마다 뒷정리 함수가 계속 나타나는 것을 확인 할 수 있음
+- 뒷정리 함수가 호출될 때는 업데이트 직전의 값을 보여줌
+
+```js
+import React, { useEffect, useState } from "react";
+
+const Counter = () => {
+  console.log("카운터 컴포넌트 렌더링");
+
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    console.log("effect");
+    console.log(value);
+    return () => {
+      console.log("cleanup");
+      console.log(value);
+    };
+  }, [value]);
+
+  return (
+    <div>
+      <p>
+        현재 카운터 값은 <b>{value} 입니다</b>
+      </p>
+      <button onClick={() => setValue(value + 1)}>1 증가</button>
+      <button onClick={() => setValue(value - 1)}>1 감소</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+- 오직 언마운트 될 때만 뒷정리 함수를 호출하고 싶다면 useEffect 함수에 빈 배열을 넣으면 됨
+
+```js
+import React, { useEffect, useState } from "react";
+
+const Counter = () => {
+  console.log("카운터 컴포넌트 렌더링");
+
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    console.log("effect");
+    console.log(value);
+    return () => {
+      console.log("cleanup");
+      console.log(value);
+    };
+  }, []);
+
+  return (
+    <div>
+      <p>
+        현재 카운터 값은 <b>{value} 입니다</b>
+      </p>
+      <button onClick={() => setValue(value + 1)}>1 증가</button>
+      <button onClick={() => setValue(value - 1)}>1 감소</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+## 6.3 useReducer
+
+- 카페에 비유 해볼께요
+- 액션 타입 : 카페의 메뉴 (아메리카노, 라떼, 카푸치노, 아이스티 등)
+- 액션 생성 함수 : 주문서 작성 (아메리카노 하나랑 라떼 한 잔 주세요)
+  - 페이로드 : 주문서 작성 (아메리카노는 **샷 추가**, 라떼 우유는 **두유**로 바꿔주세요)
+- 디스패치 함수 : 주문하기
+- 리듀서 함수 : 바리스타, 주문 받은걸 만들고 가공해서 손님에게 드림
+
+- useState보다 더 다양한 컴포넌트 상황에 따라 다양한 상태를 다른 값으로 업데이트 해주고 싶을 때 사용하는 Hook
+- 리듀서는 현재 상태 그리고 업데이트를 위해 필요한 정보를 담은 action 값을 전달 받아 새로운 상태를 반환하는 함수
+- 리듀서 함수에서 새로운 상태를 만들 때는 반드시 불변성을 지켜줘야함
+
+### 6.3.1 카운터 구현하기
+
+```js
+import React from "react";
+
+const CounterReducer = () => {
+  return <div>CounterReducer</div>;
+};
+
+export default CounterReducer;
+```
+
+- src/components/CounterReducer.js(실제 이런식으로 적진 않음)
+
+```js
+import React, { useReducer } from "react";
+
+const reducer = (state, action) => {
+  // action.type에 따라 다른 작업 수행
+  switch (action.type) {
+    case "INCREMENT":
+      return { value: state.value + 1 };
+    case "DECREMENT":
+      return { value: state.value - 1 };
+    default:
+      return state;
+  }
+};
+
+const CounterReducer = () => {
+  // useReducer의 첫 번째 파라미터에는 리듀서 함수, 두 번째 파라미터에는 해당 리듀서의 기본값
+  // useReducer Hook을 사용하면 state 값과 dispatch 함수를 받아옴
+  // state : 현재 상태
+  // dispatch : 액션을 발생시키는 함수
+  // dispatch(action)과 같은 형태로 함수 안에 파라미터로 액션 값을 넣어주면 리듀서 함수가 호출되는 구조
+  // useReducer의 큰 장점은 컴포넌트 업데이트 로직을 컴포넌트 밖으로 빼낼 수 있음
+  const [state, dispatch] = useReducer(reducer, { value: 0 });
+
+  return (
+    <div>
+      <p>
+        현재 카운터 값은 <b>{state.value}</b>입니다
+      </p>
+      <button onClick={() => dispatch({ type: "INCREMENT" })}>1 증가</button>
+      <button onClick={() => dispatch({ type: "DECREMENT" })}>1 감소</button>
+    </div>
+  );
+};
+
+export default CounterReducer;
+```
+
+### 6.3.2 input 상태 관리하기
+
+- userReducer에서의 액션은 그 어떤 값도 사용 가능
+- 그래서 e.target 값 자체를 액션 값으로 사용
+
+- src/components/InputReducer.js
+
+```js
+import React, { useReducer, useState } from "react";
+
+// e : event
+
+const reducer = (state, action) => {
+  return {
+    ...state,
+    [action.name]: action.value,
+  };
+}; // 복사한 것에 덮어씌어라
+
+const initState = {
+  username: "",
+  nickname: "",
+};
+
+const InputReducer = () => {
+  const [state, dispatch] = useReducer(reducer, initState);
+
+  const { username, nickname } = state;
+
+  const onChange = e => {
+    dispatch(e.target);
+  };
+
+  return (
+    <div>
+      <div>
+        <input
+          type="text"
+          name="username"
+          value={username}
+          onChange={onChange}
+        />
+        <br />
+        <input
+          type="text"
+          name="nickname"
+          value={nickname}
+          onChange={onChange}
+        />
+      </div>
+      <div>
+        <b>이름:</b> {username}
+      </div>
+      <div>
+        <b>닉네임:</b> {nickname}
+      </div>
+    </div>
+  );
+};
+
+export default InputReducer;
+
+//  ...state -> 사본 만들기
+```
+
+```js
+import React, { useState } from "react";
+
+const initState = {
+  username: "",
+  nickname: "",
+};
+
+const InputReducer = () => {
+  // userInfo 상태
+  const [userInfo, setUserInfo] = useState(initState);
+
+  const { username, nickname } = userInfo;
+
+  // username 이벤트 핸들러
+  const onChange = e => {
+    const nextUserInfo = { ...userInfo, [e.target.name]: e.target.value };
+
+    setUserInfo(nextUserInfo);
+  };
+
+  return (
+    <div>
+      <div>
+        <input
+          type="text"
+          name="username"
+          value={username}
+          onChange={onChange}
+        />
+        <br />
+        <input
+          type="text"
+          name="nickname"
+          value={nickname}
+          onChange={onChange}
+        />
+      </div>
+      <div>
+        <b>이름:</b> {userInfo.username}
+      </div>
+      <div>
+        <b>닉네임:</b> {userInfo.nickname}
+      </div>
+    </div>
+  );
+};
+
+export default InputReducer;
+```
