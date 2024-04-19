@@ -377,3 +377,234 @@ const InputReducer = () => {
 
 export default InputReducer;
 ```
+
+## 6.4 useMemo
+
+- 나중에
+
+## 6.5 useCallback
+
+- 나중에
+
+## 6.6 useRef
+
+- 컴포넌트에서 ref를 쉽게 사용할 수 있도록 해줌
+- https://velog.io/@yubiny289/%EB%A6%AC%EC%95%A1%ED%8A%B8-ref-DOM%EC%97%90-%EC%9D%B4%EB%A6%84-%EB%8B%AC%EA%B8%B0
+
+```js
+오류 체크
+
+import React, { useRef, useState } from "react";
+
+const getAverage = number => {
+  console.log("평균값 계산 중");
+  if (number.length === 0) return 0;
+
+  // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+  const sum = number.reduce((a, b) => a + b);
+  return sum / number.length;
+}; // 한 줄일때 {}생략 가능
+
+nst Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState("");
+    // useRef
+    const inputElement = useRef(null);
+
+
+  // input 이벤트 핸들러
+  const onChange = e => {
+    setNumber(e.target.value);
+    console.log(e.target.value);
+  };
+
+
+  // button 이벤트 핸들러
+  const onClick = () => {
+    const nextList = list.concat(parseInt(number)); // 정수(숫자)로 변환, concat -> 새로운 배열을 만들어줌
+    setList(nextList);
+    setNumber("");
+    // useRef
+    inputElement.current.focus(); // 등록하고 그 깜빡이게 입력창 바로 전환됨
+  };
+
+  const avg = getAverage(list);
+
+
+  };
+  return (
+    <div>
+      <input
+        type="number"
+        value={number}
+        onChange={onChange}
+        ref={inputElement}
+      />
+      <button onClick={onClick}>등록</button>
+
+      {/* 배열 만드는 중 */}
+      {/* 맵에서는 ()써서 뭔가를 보여준다 */}
+      <ul>
+        {list.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      <div>
+        <b>평균값: </b>
+        {avg}
+      </div>
+    </div>
+  );
+};
+
+export default Average;
+```
+
+```js
+정상 작동됨
+
+import React, { useRef, useState } from "react";
+
+const getAverage = number => {
+  console.log("평균값 계산 중...");
+  if (number.length === 0) return 0;
+
+  // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+  const sum = number.reduce((a, b) => a + b);
+  return sum / number.length;
+};
+
+const Average = () => {
+  const [list, setList] = useState([]);
+  const [number, setNumber] = useState("");
+  // useRef
+  const inputElement = useRef(null);
+
+  // input 이벤트 핸들러
+  const onChange = e => {
+    setNumber(e.target.value);
+    console.log(e.target.value);
+  };
+
+  // button 이벤트 핸들러
+  const onClick = () => {
+    const nextList = list.concat(parseInt(number));
+    setList(nextList);
+    setNumber("");
+    // useRef
+    inputElement.current.focus();
+  };
+
+  const avg = getAverage(list);
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={number}
+        onChange={onChange}
+        ref={inputElement}
+      />
+      <button onClick={onClick}>등록</button>
+      <ul>
+        {list.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      <div>
+        <b>평균값: </b>
+        {avg}
+      </div>
+    </div>
+  );
+};
+
+export default Average;
+```
+
+### 6.6.1 로컬 변수 사용
+
+- 컴포넌트 로컬 변수를 사용해야 할 때도 useRef를 활용할 수 있음
+- 여기서 로컬 변수는 렌더링과 상관없이 바뀔 수 있는 **값**을 의미함
+- 실습 예제 : 더블 클릭 방지 기능 구현, 사용자가 버튼을 빠르게 여러 번 클릭하는 경우 예상치 못한 여러 번의 액션을 방지
+
+```js
+import React, { useRef, useState } from "react";
+
+const getAverage = number => {
+  console.log("평균값 계산 중...");
+  if (number.length === 0) return 0;
+
+  // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+  const sum = number.reduce((a, b) => a + b);
+  return sum / number.length;
+};
+
+const Average = () => {
+  const [list, setList] = useState([]);
+  const [number, setNumber] = useState("");
+  // useRef
+  const inputElement = useRef(null);
+
+  // input 이벤트 핸들러
+  const onChange = e => {
+    setNumber(e.target.value);
+    console.log(e.target.value);
+  };
+
+  // button 이벤트 핸들러
+  const onClick = () => {
+    const nextList = list.concat(parseInt(number));
+    setList(nextList);
+    setNumber("");
+    // useRef
+    inputElement.current.focus();
+  };
+
+  // useRef 로컬 변수 사용
+  // 더블 클릭 방지기능
+  const isClick = useRef(false); // 초기값은 false
+  const preventDblClick = () => {
+    if (isClick.current) {
+      console.log("이미 처리 중입니다");
+      inputElement.current.focus();
+      return;
+    }
+
+    console.log("처리 시작");
+    isClick.current = true;
+    onClick();
+
+    // 처리에 1초가 소요된다고 가정
+    setTimeout(() => {
+      isClick.current = false;
+      console.log("처리 완료");
+    }, 2000); // 1초 : 1000
+  };
+
+  const avg = getAverage(list);
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={number}
+        onChange={onChange}
+        ref={inputElement}
+      />
+      <button onClick={preventDblClick}>등록</button>
+      <ul>
+        {list.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      <div>
+        <b>평균값: </b>
+        {avg}
+      </div>
+    </div>
+  );
+};
+
+export default Average;
+```
