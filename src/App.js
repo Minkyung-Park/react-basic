@@ -6,6 +6,8 @@ import Articles from "./pages/Articles";
 import Article from "./pages/Article";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
+import MyPage from "./pages/MyPage";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
         <Route index element={<Navigate replace to="1" />} />
         <Route path=":id" element={<Article />} />
       </Route>
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/mypage" element={<MyPage />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>
