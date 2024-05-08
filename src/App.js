@@ -1,15 +1,16 @@
-import React from "react";
-import ScssComponent from "./components/ScssComponent";
-import CSSModule from "./components/CSSModule";
-import StyledComponent from "./components/StyledComponent";
-import Axios from "./pages/Axios";
+import ColorBox from "./components/ColorBox";
+import SelectColors from "./components/SelectColors";
+import { ColorProvider } from "./contexts/colorContext";
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <Axios />
-    </div>
+    <ColorProvider>
+      <div>
+        <SelectColors />
+        <ColorBox />
+      </div>
+    </ColorProvider>
   );
-};
+}
 
 export default App;
